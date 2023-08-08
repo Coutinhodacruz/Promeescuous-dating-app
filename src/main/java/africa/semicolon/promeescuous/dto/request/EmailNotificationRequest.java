@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+import static africa.semicolon.promeescuous.utils.AppUtils.*;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +18,7 @@ import java.util.List;
 
 public class EmailNotificationRequest {
 
-    private Sender sender;
+    private final Sender sender = new Sender(APP_NAME, APP_EMAIL);
 
     //to
     @JsonProperty("to")

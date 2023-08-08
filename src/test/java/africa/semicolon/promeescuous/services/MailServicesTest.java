@@ -22,9 +22,9 @@ public class MailServicesTest {
 
     @Test
     public void testThatEmailSendingWorks(){
-        String recipientEmail ="dewafof546@weishu8.com";
+        String recipientEmail ="xogov34623@vreaa.com";
         String message = "<p>testing our mail services</p>";
-        String mailSender = "noreply@promiscuous.com";
+//        String mailSender = "noreply@promiscuous.com";
         String subject = "test email";
 
         Recipient recipient = new Recipient();
@@ -32,14 +32,14 @@ public class MailServicesTest {
         List<Recipient> recipients = new ArrayList<>();
         recipients.add(recipient);
 
-        Sender sender = new Sender();
-        sender.setEmail(mailSender);
+//        Sender sender = new Sender();
+//        sender.setEmail(mailSender);
 
         EmailNotificationRequest request = new EmailNotificationRequest();
         request.setMailContent(message);
         request.setRecipients(recipients);
         request.setSubject(subject);
-        request.setSender(sender);
+
 
 
         EmailNotificationResponse notificationResponse = mailServices.send(request);

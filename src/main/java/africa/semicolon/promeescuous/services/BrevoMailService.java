@@ -1,7 +1,11 @@
 package africa.semicolon.promeescuous.services;
 
+import africa.semicolon.promeescuous.config.AppConfig;
 import africa.semicolon.promeescuous.dto.request.EmailNotificationRequest;
 import africa.semicolon.promeescuous.dto.response.EmailNotificationResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -9,13 +13,18 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class BrevoMailService implements MailServices {
+
+    private final AppConfig appConfig;
     @Override
     public EmailNotificationResponse send(EmailNotificationRequest emailNotificationRequest) {
         String brevoMailAddress = "https://api.brevo.com/v3/smtp/email";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.set("api-key", "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");
+        headers.set("api-key", appConfig.getMailApiKey());
+        headers.set("Content-type", "application/json");
 
         HttpEntity<EmailNotificationRequest> request =
                 new HttpEntity<>(emailNotificationRequest, headers);

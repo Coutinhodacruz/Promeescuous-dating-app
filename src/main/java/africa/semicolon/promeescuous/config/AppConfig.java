@@ -9,7 +9,15 @@ public class AppConfig {
     @Value("${mail.api.key}")
     private String mailApiKey;
 
+    @Value("${app.dev.token}")
+    private String testToken;
+
+    public String getTestToken() {
+        return testToken;
+    }
+
     public String getMailApiKey() {
         return mailApiKey;
     }
+
 }
