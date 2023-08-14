@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Setter
@@ -11,19 +12,23 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private LocalDate dateOfBirth;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Address address;
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
     @Enumerated(value = EnumType.STRING)
     private Role role;
     private String firstName;
+
     private String lastName;
+
+    private LocalDate createdAt;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -34,4 +39,8 @@ public class User {
 
     private boolean isActive;
 
+    @PrePersist
+    public void setCreatedDate() {
+        createdAt = LocalDate.now();
+    }
 }
