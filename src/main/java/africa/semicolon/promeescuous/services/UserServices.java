@@ -17,4 +17,7 @@ public interface UserServices {
 
 
    List<GetUserResponse> getAllUsers(int page, int pageSize);
+
+    void deleteAll();
+
 }

@@ -20,10 +20,10 @@ class AppUtilsTest {
 
     @Test
     public void testGenerateActivationLink(){
-        String activationLink = generateActivationLink(appConfig.getBaseUrl(),"test@email.com");
+        String activationLink = generateActivationLink("localhost:8080","test@email.com");
         log.info("activation link --> {} ", activationLink);
         assertThat(activationLink).isNotNull();
-        assertThat(activationLink).contains("localhost:8080/users/activate");
+        assertThat(activationLink).contains("localhost:8080/user/activate");
     }
 
     @Test

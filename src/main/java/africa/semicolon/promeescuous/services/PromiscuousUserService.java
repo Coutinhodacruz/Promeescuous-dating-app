@@ -96,6 +96,10 @@ public class PromiscuousUserService implements UserServices{
                 .toList();
     }
 
+    public void deleteAll(){
+        userRepository.deleteAll();
+    }
+
     private Pageable buildPageRequest(int page, int pageSize) {
         if (page<1&&pageSize<1)return PageRequest.of(0,10);
         if (page<1)return  PageRequest.of(0,pageSize);
