@@ -107,7 +107,9 @@ public class PromiscuousUserService implements UserServices{
     private ApiResponse<?> activateAccount(String token) {
         String email = extractEmailFrom(token);
         Optional<User> user = userRepository.findByEmail(email);
-        User foundUser = user.orElseThrow(()-> new UserNotFoundException(String.format(USER_WITH_EMAIL_NOT_FOUND_EXCEPTION.getMessage(), email)
+        User foundUser = user.orElseThrow(
+                ()-> new UserNotFoundException(
+                        String.format(USER_WITH_EMAIL_NOT_FOUND_EXCEPTION.getMessage(), email)
         ));
 
         foundUser.setActive(true);

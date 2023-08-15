@@ -28,10 +28,10 @@ public class AppUtils {
 
     private static final String ACTIVATE_ACCOUNT_PATH = "/user/activate?code=";
 
-    public static String generateActivationLink(String bareUrl, String email){
+    public static String generateActivationLink(String baseUrl, String email){
 
         String token = generateToken(email);
-        String activationLink = bareUrl+ ACTIVATE_ACCOUNT_PATH + token;
+        String activationLink = baseUrl+ ACTIVATE_ACCOUNT_PATH + token;
 
 
         return activationLink;
