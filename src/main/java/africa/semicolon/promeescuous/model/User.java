@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -28,7 +30,10 @@ public class User {
 
     private String lastName;
 
-    private LocalDate createdAt;
+    private String createdAt;
+
+    @ElementCollection
+    private Set<Interest> interest;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -41,6 +46,8 @@ public class User {
 
     @PrePersist
     public void setCreatedDate() {
-        createdAt = LocalDate.now();
+        var currentTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        createdAt = currentTime.format(formatter);
     }
 }

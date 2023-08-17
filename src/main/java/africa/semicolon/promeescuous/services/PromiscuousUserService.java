@@ -1,18 +1,25 @@
 package africa.semicolon.promeescuous.services;
 
 import africa.semicolon.promeescuous.config.AppConfig;
-import africa.semicolon.promeescuous.dto.request.EmailNotificationRequest;
-import africa.semicolon.promeescuous.dto.request.Recipient;
-import africa.semicolon.promeescuous.dto.request.RegisterUserRequest;
-import africa.semicolon.promeescuous.dto.response.ActivateAccountResponse;
-import africa.semicolon.promeescuous.dto.response.ApiResponse;
-import africa.semicolon.promeescuous.dto.response.GetUserResponse;
-import africa.semicolon.promeescuous.dto.response.RegisterUserResponse;
+import africa.semicolon.promeescuous.dto.request.*;
+import africa.semicolon.promeescuous.dto.response.*;
 import africa.semicolon.promeescuous.exception.AccountActivationException;
+import africa.semicolon.promeescuous.exception.BadCredentialsException;
+import africa.semicolon.promeescuous.exception.PromiscuousBaseException;
 import africa.semicolon.promeescuous.exception.UserNotFoundException;
 import africa.semicolon.promeescuous.model.Address;
 import africa.semicolon.promeescuous.model.User;
 import africa.semicolon.promeescuous.repositories.UserRepository;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerException;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,7 +27,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +37,7 @@ import static africa.semicolon.promeescuous.dto.response.ResponseMessage.ACCOUNT
 import static africa.semicolon.promeescuous.dto.response.ResponseMessage.USER_REGISTRATION_SUCCESSFUL;
 import static africa.semicolon.promeescuous.exception.ExceptionMessage.*;
 import static africa.semicolon.promeescuous.utils.AppUtils.*;
-import static africa.semicolon.promeescuous.utils.JwtUtils.extractEmailFrom;
-import static africa.semicolon.promeescuous.utils.JwtUtils.validateToken;
+import static africa.semicolon.promeescuous.utils.JwtUtils.*;
 
 @Service
 @AllArgsConstructor
@@ -96,9 +104,86 @@ public class PromiscuousUserService implements UserServices{
                 .toList();
     }
 
-    public void deleteAll(){
-        userRepository.deleteAll();
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
+
+        Optional<User> foundUSer = userRepository.findByEmail(email);
+        User user = foundUSer.orElseThrow(()->new UserNotFoundException(
+                String.format(USER_WITH_EMAIL_NOT_FOUND_EXCEPTION.getMessage(), email)
+        ));
+
+        boolean isValidPassword = matches(user.getPassword(), password);
+        if (isValidPassword) return buildLoginResponse(email);
+        throw new BadCredentialsException(INVALID_CREDENTIALS_EXCEPTION.getMessage());
     }
+
+    @Override
+    public UpdateUserResponse updateProfile(UpdateUserRequest updateUserRequest, Long id) {
+        User user = findUserById(id);
+
+        return null;
+    }
+
+//    @Override
+//    public UpdateUserResponse updateUserProfile(JsonPatch jsonPatch, Long id) {
+//        ObjectMapper mapper = new ObjectMapper();
+//        User user = findUserById(id);
+//        JsonNode node = mapper.convertValue(user, JsonNode.class);
+//
+//        try {
+//           JsonNode updateNod =  jsonPatch.apply(node);
+//           User updateUser = mapper.convertValue(updateNod, User.class);
+//           userRepository.save(updateUser);
+//           UpdateUserResponse response = new UpdateUserResponse();
+//           response.setMessage("update successful");
+//           return response;
+//
+//        }catch (JsonPatchException exception){
+//            throw new PromiscuousBaseException(":(");
+//        }
+//
+//    }
+
+
+    private JsonPatch buildUpdatePatch(UpdateUserRequest updateUserRequest) {
+        JsonPatch patch;
+        Field[] fields = updateUserRequest.getClass().getDeclaredFields();
+
+        List<ReplaceOperation> operations=Arrays.stream(fields)
+                .filter(field -> field!=null)
+                .map(field->{
+                    try {
+                        String path = "/"+field.getName();
+                        JsonPointer pointer = new JsonPointer(path);
+                        String value = field.get(field.getName()).toString();
+                        TextNode node = new TextNode(value);
+                        ReplaceOperation operation = new ReplaceOperation(pointer, node);
+                        return operation;
+                    } catch (Exception exception) {
+                        throw new RuntimeException(exception);
+                    }
+                }).toList();
+
+        List<JsonPatchOperation> patchOperations = new ArrayList<>(operations);
+        return new JsonPatch(patchOperations);
+    }
+
+
+    private User findUserById(Long id){
+        Optional<User> foundUser = userRepository.findById(id);
+        User user = foundUser.orElseThrow(()-> new UserNotFoundException(USER_NOT_FOUND_EXCEPTION.getMessage()));
+        return  user;
+    }
+
+    private static LoginResponse buildLoginResponse(String email) {
+        String accessToke = generateToken(email);
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setAccessToken(accessToke);
+        return loginResponse;
+    }
+
 
     private Pageable buildPageRequest(int page, int pageSize) {
         if (page<1&&pageSize<1)return PageRequest.of(0,10);

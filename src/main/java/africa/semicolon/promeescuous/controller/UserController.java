@@ -5,7 +5,9 @@ import africa.semicolon.promeescuous.dto.request.FindUserRequest;
 import africa.semicolon.promeescuous.dto.request.RegisterUserRequest;
 import africa.semicolon.promeescuous.dto.response.GetUserResponse;
 import africa.semicolon.promeescuous.dto.response.RegisterUserResponse;
+import africa.semicolon.promeescuous.dto.response.UpdateUserResponse;
 import africa.semicolon.promeescuous.services.UserServices;
+import com.github.fge.jsonpatch.JsonPatch;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +30,10 @@ public class UserController {
 
     }
 
-    @GetMapping("/findById")
-    public ResponseEntity<GetUserResponse> getUserById(@RequestBody FindUserRequest request){
-        long id = request.getId();
+    @GetMapping("/{id}")
+    public ResponseEntity<GetUserResponse> getUserById(@PathVariable Long id){
         GetUserResponse response = userServices.getUserById(id);
-        return ResponseEntity.status(HttpStatus.FOUND).body(response);
+        return ResponseEntity.ok().body(response);
     }
     @GetMapping("/getAllUsers")
     public ResponseEntity<List<GetUserResponse>> getAllUser(@RequestBody FindUserRequest request){
@@ -41,6 +42,12 @@ public class UserController {
         List<GetUserResponse> response = userServices.getAllUsers(page,pageSize);
         return ResponseEntity.status(HttpStatus.FOUND).body(response);
     }
+
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<UpdateUserResponse>updateUserAccount(@RequestBody JsonPatch jsonPatch, @PathVariable Long id){
+//        UpdateUserResponse response = userServices.updateUserProfile(jsonPatch, id);
+//        return ResponseEntity.ok(response);
+//    }
 
 
 

@@ -1,10 +1,10 @@
 package africa.semicolon.promeescuous.services;
 
+import africa.semicolon.promeescuous.dto.request.LoginRequest;
 import africa.semicolon.promeescuous.dto.request.RegisterUserRequest;
-import africa.semicolon.promeescuous.dto.response.ApiResponse;
-import africa.semicolon.promeescuous.dto.response.GetUserResponse;
-import africa.semicolon.promeescuous.dto.response.RegisterUserResponse;
-import africa.semicolon.promeescuous.model.User;
+import africa.semicolon.promeescuous.dto.request.UpdateUserRequest;
+import africa.semicolon.promeescuous.dto.response.*;
+import com.github.fge.jsonpatch.JsonPatch;
 
 import java.util.List;
 
@@ -18,6 +18,10 @@ public interface UserServices {
 
    List<GetUserResponse> getAllUsers(int page, int pageSize);
 
-    void deleteAll();
 
+   LoginResponse login(LoginRequest loginRequest);
+
+   UpdateUserResponse updateProfile(UpdateUserRequest updateUserRequest, Long id);
+
+//   UpdateUserResponse updateUserProfile(JsonPatch jsonPatch, Long id);
 }

@@ -15,4 +15,5 @@ public class GetUserResponse {
     private String fullName;
     private String address;
     private String phoneNumber;
+    private String profileImage;
 }

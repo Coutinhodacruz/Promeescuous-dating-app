@@ -37,6 +37,9 @@ public class AppUtils {
         return activationLink;
     }
 
+    public static boolean matches(String first, String second) {
+        return first.equals(second);
+    }
 
 
     public static String getMailTemplate(){

@@ -16,7 +16,7 @@ public class Media {
     @ElementCollection
 
     private List<Reaction> reactions;
-    @Column(unique = true, columnDefinition = "MEDIUMTEXT", length = 1000)
+    @Column(name = "url", unique = true, length = 255)
     private String url;
     @ManyToOne
     private User user;
