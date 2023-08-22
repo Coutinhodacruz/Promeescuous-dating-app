@@ -17,7 +17,7 @@ public class UpdateUserRequest {
     private LocalDate dateOfBirth ;
     private String password;
     private String gender;
-    private Set<String> interest;
+    private Set<String> interests;
     private MultipartFile profileImage;
     private String phoneNumber;
     private String houseNumber;

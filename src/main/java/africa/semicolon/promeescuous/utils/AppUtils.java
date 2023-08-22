@@ -28,6 +28,10 @@ public class AppUtils {
 
     private static final String ACTIVATE_ACCOUNT_PATH = "/user/activate?code=";
 
+    public static final String JSON_PATCH_PATH_PREFIX = "/";
+
+    public static final String TEST_IMAGE_LOCATION = "C:\\Users\\Admin\\promeescuous\\src\\test\\resources\\image\\puppy.jpg";
+
     public static String generateActivationLink(String baseUrl, String email){
 
         String token = generateToken(email);

@@ -9,6 +9,7 @@ import africa.semicolon.promeescuous.dto.response.LoginResponse;
 import africa.semicolon.promeescuous.dto.response.UpdateUserResponse;
 import africa.semicolon.promeescuous.exception.BadCredentialsException;
 import africa.semicolon.promeescuous.exception.PromiscuousBaseException;
+import africa.semicolon.promeescuous.model.Interest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,15 +120,17 @@ public class UserServicesTest {
     }
 
     private UpdateUserRequest buildUpdateRequest() {
-        Set<String> intrests = Set.of("Swimming", "Sports", "Cookinkg");
+        Set<String> interests = Set.of("Swimming", "Sports", "Cooking");
         UpdateUserRequest updateUserRequest = new UpdateUserRequest();
         updateUserRequest.setId(500L);
         updateUserRequest.setDateOfBirth(LocalDate.of(2005, Month.OCTOBER.ordinal(), 25));
         updateUserRequest.setFirstName("Boy");
         updateUserRequest.setLastName("Girl");
+        updateUserRequest.setPassword("password");
+        updateUserRequest.setInterests(interests);
         MultipartFile testImage = getTestImage();
         updateUserRequest.setProfileImage(testImage);
-        updateUserRequest.setInterest(intrests);
+
 
         return updateUserRequest;
     }

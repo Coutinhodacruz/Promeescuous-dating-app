@@ -4,5 +4,6 @@ public enum Interest {
     SPORTS, PHOTOGRAPHY,
     TRAVELLING, COOKING,
     SOCCER, ANIME,
-    MUSIC, READING
+    MUSIC, READING,
+    SWIMMING
 }

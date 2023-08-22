@@ -1,5 +1,9 @@
 package africa.semicolon.promeescuous.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,6 +11,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
+
+import static jakarta.persistence.EnumType.STRING;
 
 @Entity
 @Setter
@@ -19,12 +25,15 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateOfBirth;
-    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Address address;
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(value = STRING)
     private Gender gender;
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(value = STRING)
     private Role role;
     private String firstName;
 
@@ -32,7 +41,8 @@ public class User {
 
     private String createdAt;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(value = STRING)
     private Set<Interest> interest;
 
     @Column(unique = true, nullable = false)

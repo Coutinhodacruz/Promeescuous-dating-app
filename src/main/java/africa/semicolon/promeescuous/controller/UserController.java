@@ -3,11 +3,11 @@ package africa.semicolon.promeescuous.controller;
 
 import africa.semicolon.promeescuous.dto.request.FindUserRequest;
 import africa.semicolon.promeescuous.dto.request.RegisterUserRequest;
+import africa.semicolon.promeescuous.dto.request.UpdateUserRequest;
 import africa.semicolon.promeescuous.dto.response.GetUserResponse;
 import africa.semicolon.promeescuous.dto.response.RegisterUserResponse;
 import africa.semicolon.promeescuous.dto.response.UpdateUserResponse;
 import africa.semicolon.promeescuous.services.UserServices;
-import com.github.fge.jsonpatch.JsonPatch;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +43,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FOUND).body(response);
     }
 
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<UpdateUserResponse>updateUserAccount(@RequestBody JsonPatch jsonPatch, @PathVariable Long id){
-//        UpdateUserResponse response = userServices.updateUserProfile(jsonPatch, id);
-//        return ResponseEntity.ok(response);
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<UpdateUserResponse>updateUserProfile(@ModelAttribute UpdateUserRequest updateUserRequest,@PathVariable Long id){
+        UpdateUserResponse response = userServices.updateProfile(updateUserRequest, id);
+        return ResponseEntity.ok(response);
+    }
 
 
 
