@@ -8,7 +8,15 @@ public enum ExceptionMessage {
 
     ACCOUNT_ACTIVATION_FAILED_EXCEPTION("Account activation was not successfully"),
 
-    INVALID_CREDENTIALS_EXCEPTION("Invalid Credentials");
+    INVALID_CREDENTIALS_EXCEPTION("Invalid Credentials"),
+
+    MESSAGE_SENT_SUCCESSFULLY("Message sent successfully."),
+
+    SUCCESS("Success"),
+    NOTIFICATION_SENT_SUCCESSFULLY("Notification sent successfully"),
+    MEDIA_NOT_FOUND("Medial not found");
+
+
 
 
     ExceptionMessage(){

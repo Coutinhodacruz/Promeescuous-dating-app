@@ -1,17 +1,15 @@
 package africa.semicolon.promeescuous.controller;
 
 
-import africa.semicolon.promeescuous.dto.request.FindUserRequest;
-import africa.semicolon.promeescuous.dto.request.RegisterUserRequest;
-import africa.semicolon.promeescuous.dto.request.UpdateUserRequest;
-import africa.semicolon.promeescuous.dto.response.GetUserResponse;
-import africa.semicolon.promeescuous.dto.response.RegisterUserResponse;
-import africa.semicolon.promeescuous.dto.response.UpdateUserResponse;
+import africa.semicolon.promeescuous.dto.request.*;
+import africa.semicolon.promeescuous.dto.response.*;
 import africa.semicolon.promeescuous.services.UserServices;
+import com.github.fge.jsonpatch.JsonPatchException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -44,11 +42,29 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UpdateUserResponse>updateUserProfile(@ModelAttribute UpdateUserRequest updateUserRequest,@PathVariable Long id){
+    public ResponseEntity<UpdateUserResponse>updateUserProfile(@ModelAttribute UpdateUserRequest updateUserRequest,@PathVariable Long id) throws JsonPatchException {
         UpdateUserResponse response = userServices.updateProfile(updateUserRequest, id);
         return ResponseEntity.ok(response);
     }
 
+
+    @PostMapping("/uploadMedia")
+    public ResponseEntity<UploadMediaResponse> uploadMedia(@ModelAttribute UploadMediaRequest mediaRequest){
+        MultipartFile mediaToUpload = mediaRequest.getMedia();
+        UploadMediaResponse response = userServices.uploadMedia(mediaToUpload);
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("uploadProfilePicture")
+    public ResponseEntity<UploadMediaResponse> uploadProfilePicture(@ModelAttribute UploadMediaRequest mediaRequest){
+        MultipartFile mediaToUpload = mediaRequest.getMedia();
+        UploadMediaResponse response = userServices.uploadProfilePicture(mediaToUpload);
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/react/{id}")
+    public ResponseEntity<?> reactToMedia(@RequestBody MediaReactionRequest mediaReactionRequest){
+        ApiResponse<?> response = userServices.reactToMedia(mediaReactionRequest);
+        return ResponseEntity.ok(response);
+    }
 
 
 }

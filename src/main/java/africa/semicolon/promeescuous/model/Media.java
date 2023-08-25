@@ -1,11 +1,15 @@
 package africa.semicolon.promeescuous.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
 @Entity
+@Setter
+@Getter
 public class Media {
 
     @Id
