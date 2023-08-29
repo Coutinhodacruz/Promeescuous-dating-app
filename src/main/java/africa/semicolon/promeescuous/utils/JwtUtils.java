@@ -24,7 +24,7 @@ public class JwtUtils {
         return token;
     }
 
-    public static String generateAccessToken(List<? extends GrantedAuthority> authorities){
+    public static String generateAccessToken(List<String> authorities){
         String token = JWT.create()
                 .withClaim("roles", authorities)
                 .withIssuer(APP_NAME)

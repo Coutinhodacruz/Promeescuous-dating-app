@@ -9,10 +9,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static africa.semicolon.promeescuous.model.Role.CUSTOMER;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -28,13 +31,13 @@ public class SecurityConfig {
         var authenticationFilter = new PromiscuousAuthenticationFilter(authenticationManager);
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .sessionManagement(c->c.sessionCreationPolicy(STATELESS))
+                .sessionManagement(c->c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new PromiscuousAuthorizationFilter(), PromiscuousAuthenticationFilter.class)
                 .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(c->c.requestMatchers(POST, "/api/v1/user")
+                .authorizeHttpRequests(c->c.requestMatchers(POST, "/api/v1/user","/login")
                         .permitAll())
-                .authorizeHttpRequests(c->c.requestMatchers(POST,"/login")
-                        .permitAll())
+                .authorizeHttpRequests(c->c.requestMatchers(PUT, "/api/v1/user/**")
+                        .hasRole(CUSTOMER.name()))
                 .authorizeHttpRequests(c->c.anyRequest().authenticated())
                 .build();
     }
