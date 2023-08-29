@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 
 import java.util.List;
 
-import static africa.semicolon.promeescuous.utils.JwtUtils.generateToken;
+import static africa.semicolon.promeescuous.utils.JwtUtils.generateVerificationToken;
 
 
 public class AppUtils {
@@ -34,7 +34,7 @@ public class AppUtils {
 
     public static String generateActivationLink(String baseUrl, String email){
 
-        String token = generateToken(email);
+        String token = generateVerificationToken(email);
         String activationLink = baseUrl+ ACTIVATE_ACCOUNT_PATH + token;
 
 
@@ -59,6 +59,10 @@ public class AppUtils {
             throw new PromiscuousBaseException(exception.getMessage());
         }
 
+    }
+
+    public static List<String > getPublicPaths(){
+        return List.of("/api/v1/user");
     }
 
 

@@ -1,13 +1,20 @@
 package africa.semicolon.promeescuous.security.providers;
 
+import africa.semicolon.promeescuous.exception.BadCredentialsException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+
+import static africa.semicolon.promeescuous.exception.ExceptionMessage.INVALID_CREDENTIALS_EXCEPTION;
 
 @AllArgsConstructor
 @Component
@@ -15,15 +22,6 @@ public class PromiscuousAuthenticationProvider implements AuthenticationProvider
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-
-
-
-
-
-
-
-
-
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -37,13 +35,16 @@ public class PromiscuousAuthenticationProvider implements AuthenticationProvider
         boolean isValidPasswordMatch = passwordEncoder.matches(password, user.getPassword());
         // if the password match request is authenticated
         if (isValidPasswordMatch) {
-
+            Collection<?   extends GrantedAuthority> authorities = user.getAuthorities();
+            Authentication authenticationResult = new UsernamePasswordAuthenticationToken(email, password, authorities);
+            return authenticationResult;
         }
-
+        // else request isn't authenticated
+        throw new BadCredentialsException(INVALID_CREDENTIALS_EXCEPTION.getMessage());
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return false;
+        return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 }

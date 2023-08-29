@@ -49,6 +49,7 @@ public class User {
     private String password;
     @Enumerated(value = STRING)
     private Role role;
+
     private boolean isActive;
 
 

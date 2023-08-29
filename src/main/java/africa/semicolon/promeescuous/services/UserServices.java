@@ -1,13 +1,11 @@
 package africa.semicolon.promeescuous.services;
 
-import africa.semicolon.promeescuous.dto.request.LoginRequest;
 import africa.semicolon.promeescuous.dto.request.MediaReactionRequest;
 import africa.semicolon.promeescuous.dto.request.RegisterUserRequest;
 import africa.semicolon.promeescuous.dto.request.UpdateUserRequest;
 import africa.semicolon.promeescuous.dto.response.*;
 import africa.semicolon.promeescuous.exception.UserNotFoundException;
 import africa.semicolon.promeescuous.model.User;
-import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +30,8 @@ public interface UserServices {
    UploadMediaResponse uploadProfilePicture(MultipartFile mediaToUpload);
 
    ApiResponse<?> reactToMedia(MediaReactionRequest mediaReactionRequest);
+
+    User getUserByEmail(String email);
 
 //   UpdateUserResponse updateUserProfile(JsonPatch jsonPatch, Long id);
 }

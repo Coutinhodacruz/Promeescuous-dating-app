@@ -14,7 +14,10 @@ public enum ExceptionMessage {
 
     SUCCESS("Success"),
     NOTIFICATION_SENT_SUCCESSFULLY("Notification sent successfully"),
-    MEDIA_NOT_FOUND("Medial not found");
+    MEDIA_NOT_FOUND("Medial not found"),
+
+    AUTHENTICATION_NOT_SUPPORTED("Authentication not supported on this system");
+
 
 
 

@@ -6,6 +6,7 @@ import africa.semicolon.promeescuous.dto.response.*;
 import africa.semicolon.promeescuous.exception.*;
 import africa.semicolon.promeescuous.model.Address;
 import africa.semicolon.promeescuous.model.Interest;
+import africa.semicolon.promeescuous.model.Role;
 import africa.semicolon.promeescuous.model.User;
 import africa.semicolon.promeescuous.repositories.UserRepository;
 import africa.semicolon.promeescuous.services.cloud.CloudService;
@@ -23,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 
 import static africa.semicolon.promeescuous.dto.response.ResponseMessage.*;
 import static africa.semicolon.promeescuous.exception.ExceptionMessage.*;
+import static africa.semicolon.promeescuous.model.Role.CUSTOMER;
 import static africa.semicolon.promeescuous.utils.AppUtils.*;
 import static africa.semicolon.promeescuous.utils.JwtUtils.*;
 
@@ -47,14 +50,18 @@ public class PromiscuousUserService implements UserServices{
 
     private final MediaService mediaService;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public RegisterUserResponse register(RegisterUserRequest registerUserRequest) {
         String email = registerUserRequest.getEmail();
         String password = registerUserRequest.getPassword();
+        String passwordHash = passwordEncoder.encode(password);
         User user = new User();
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPassword(passwordHash);
         user.setAddress(new Address());
+        user.setRole(CUSTOMER);
         User savedUser = userRepository.save(user);
         EmailNotificationRequest request = buildEmailRequest(savedUser);
         mailService.send(request);
@@ -134,6 +141,14 @@ public class PromiscuousUserService implements UserServices{
     public ApiResponse<?> reactToMedia(MediaReactionRequest mediaReactionRequest) {
         String response = mediaService.reactToMedia(mediaReactionRequest);
         return ApiResponse.builder().data(response).build();
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                ()-> new UserNotFoundException(
+                String.format(USER_WITH_EMAIL_NOT_FOUND_EXCEPTION.getMessage(), email)
+        ));
     }
 
     private String uploadImage(MultipartFile profileImage) {
