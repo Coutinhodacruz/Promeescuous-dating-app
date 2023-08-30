@@ -129,14 +129,13 @@ public class PromiscuousUserService implements UserServices{
 
     @Override
     public UploadMediaResponse uploadMedia(MultipartFile mediaToUpload) {
-        return mediaService.uploadMedia(mediaToUpload);
+        return null;
     }
 
     @Override
     public UploadMediaResponse uploadProfilePicture(MultipartFile mediaToUpload) {
         return mediaService.uploadProfilePicture(mediaToUpload);
     }
-
     @Override
     public ApiResponse<?> reactToMedia(MediaReactionRequest mediaReactionRequest) {
         String response = mediaService.reactToMedia(mediaReactionRequest);

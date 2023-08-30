@@ -1,7 +1,7 @@
 package africa.semicolon.promeescuous.security.filters;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,32 +17,60 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+import static africa.semicolon.promeescuous.utils.AppUtils.APP_NAME;
 import static africa.semicolon.promeescuous.utils.AppUtils.getPublicPaths;
+import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 
 @Slf4j
 public class PromiscuousAuthorizationFilter extends OncePerRequestFilter {
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("url->{}", request.getServletPath());
+        log.info("I got called because a request to url->{} was made", request.getServletPath());
         if (getPublicPaths().contains(request.getServletPath())) filterChain.doFilter(request, response);
-        else authorize(request);
-    }
+        else{
+            String authorizationHeader = request.getHeader(AUTHORIZATION);//"Bearer xxxx_xxxx_xxxx..."
 
-    private void authorize(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
-        String token = authorizationHeader.substring("Bearer ".length());
 
-        List<SimpleGrantedAuthority>  authorities = extractClaimsFrom(token);
+            String token = authorizationHeader.substring("Bearer ".length());
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(null, null, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
+            JWTVerifier verifier = JWT.require(HMAC512("secret"))
+                    .withIssuer(APP_NAME)
+                    .withClaimPresence("roles")
+                    .build();
 
-    private List<SimpleGrantedAuthority> extractClaimsFrom(String token) {
-        DecodedJWT decodedJWT = JWT.decode(token);
-        Claim claim  = decodedJWT.getClaim("roles");
-        return claim.asList(SimpleGrantedAuthority.class);
+            DecodedJWT decodedJWT = verifier.verify(token);
+            List<SimpleGrantedAuthority> authorities = decodedJWT.getClaim("roles")
+                    .asList(SimpleGrantedAuthority.class);
+            log.info("authorities->{}", authorities);
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(null, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            filterChain.doFilter(request, response);
+        }
     }
 }
+
+//        log.info("url->{}", request.getServletPath());
+//        if (getPublicPaths().contains(request.getServletPath())) filterChain.doFilter(request, response);
+//        else authorize(request);
+
+
+//    private void authorize(HttpServletRequest request) {
+//        String authorizationHeader = request.getHeader(AUTHORIZATION);
+//        String token = authorizationHeader.substring("Bearer ".length());
+//
+//        List<SimpleGrantedAuthority>  authorities = extractClaimsFrom(token);
+//
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(null, null, authorities);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//    }
+//
+//    private List<SimpleGrantedAuthority> extractClaimsFrom(String token) {
+//        DecodedJWT decodedJWT = JWT.decode(token);
+//        Claim claim  = decodedJWT.getClaim("roles");
+//        return claim.asList(SimpleGrantedAuthority.class);
+//    }

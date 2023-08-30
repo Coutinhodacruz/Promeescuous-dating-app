@@ -8,14 +8,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static africa.semicolon.promeescuous.model.Role.CUSTOMER;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -25,20 +22,19 @@ public class SecurityConfig {
     private final AuthenticationManager authenticationManager;
 
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        var authenticationFilter = new PromiscuousAuthenticationFilter(authenticationManager);
-        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+        final String[] publicEndPoints = {"/api/v1/user", "/login"};
+        return httpSecurity
+                .addFilterAt(new PromiscuousAuthenticationFilter(authenticationManager),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new PromiscuousAuthorizationFilter(),
+                        PromiscuousAuthenticationFilter.class)
+                .sessionManagement(customizer->customizer.sessionCreationPolicy(STATELESS))
+                .csrf(c->c.disable())
                 .cors(Customizer.withDefaults())
-                .sessionManagement(c->c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new PromiscuousAuthorizationFilter(), PromiscuousAuthenticationFilter.class)
-                .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(c->c.requestMatchers(POST, "/api/v1/user","/login")
-                        .permitAll())
-                .authorizeHttpRequests(c->c.requestMatchers(PUT, "/api/v1/user/**")
-                        .hasRole(CUSTOMER.name()))
-                .authorizeHttpRequests(c->c.anyRequest().authenticated())
+                .authorizeHttpRequests(c->c.requestMatchers(POST, publicEndPoints).permitAll())
+                .authorizeHttpRequests(c->c.anyRequest().hasAuthority(CUSTOMER.name()))
                 .build();
     }
 }
