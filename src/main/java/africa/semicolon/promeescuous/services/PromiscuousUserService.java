@@ -3,10 +3,11 @@ package africa.semicolon.promeescuous.services;
 import africa.semicolon.promeescuous.config.AppConfig;
 import africa.semicolon.promeescuous.dto.request.*;
 import africa.semicolon.promeescuous.dto.response.*;
-import africa.semicolon.promeescuous.exception.*;
+import africa.semicolon.promeescuous.exception.AccountActivationFailedException;
+import africa.semicolon.promeescuous.exception.PromiscuousBaseException;
+import africa.semicolon.promeescuous.exception.UserNotFoundException;
 import africa.semicolon.promeescuous.model.Address;
 import africa.semicolon.promeescuous.model.Interest;
-import africa.semicolon.promeescuous.model.Role;
 import africa.semicolon.promeescuous.model.User;
 import africa.semicolon.promeescuous.repositories.UserRepository;
 import africa.semicolon.promeescuous.services.cloud.CloudService;
@@ -36,7 +37,8 @@ import static africa.semicolon.promeescuous.dto.response.ResponseMessage.*;
 import static africa.semicolon.promeescuous.exception.ExceptionMessage.*;
 import static africa.semicolon.promeescuous.model.Role.CUSTOMER;
 import static africa.semicolon.promeescuous.utils.AppUtils.*;
-import static africa.semicolon.promeescuous.utils.JwtUtils.*;
+import static africa.semicolon.promeescuous.utils.JwtUtils.extractEmailFrom;
+import static africa.semicolon.promeescuous.utils.JwtUtils.validateToken;
 
 @Service
 @AllArgsConstructor
@@ -106,7 +108,7 @@ public class PromiscuousUserService implements UserServices{
 
 
     @Override
-    public UpdateUserResponse updateProfile(UpdateUserRequest updateUserRequest, Long id) throws JsonPatchException {
+    public UpdateUserResponse  updateProfile(UpdateUserRequest updateUserRequest, Long id) throws JsonPatchException {
         ModelMapper modelMapper = new ModelMapper();
 
 
